@@ -1,3 +1,6 @@
+# Don't commit raw data files
+*.jsonl.gz
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

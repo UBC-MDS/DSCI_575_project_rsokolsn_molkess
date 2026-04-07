@@ -2,6 +2,8 @@
 
 ## Project Description
 
+This Query Assistant allows the user to search books from the Amazon Reviews 2023 Books category.
+
 ## Usage
 
 ### Environment Set Up
