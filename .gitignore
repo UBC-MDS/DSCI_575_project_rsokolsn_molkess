@@ -1,5 +1,6 @@
-# Don't commit raw data files
+# Don't commit raw or processed data files
 *.jsonl.gz
+*.parquet
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
