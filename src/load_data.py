@@ -4,12 +4,12 @@ load_data.py
 Streams Amazon Reviews 2023 (Books) data from HuggingFace and saves it locally
 as Parquet files.
 
-Output files (written to data/processed/):
-  - books_reviews.parquet       Full review text and ratings (29.5M rows)
-  - books_metadata.parquet      Book-level metadata (4.4M rows)
-  - books_splits_train.parquet  Pre-defined train split: IDs + ratings only
-  - books_splits_valid.parquet  Pre-defined validation split: IDs + ratings only
-  - books_splits_test.parquet   Pre-defined test split: IDs + ratings only
+Output files:
+  - data/processed/full/books_reviews.parquet       Full review text and ratings (29.5M rows)
+  - data/processed/full/books_metadata.parquet      Book-level metadata (4.4M rows)
+  - data/processed/splits/books_splits_train.parquet  Pre-defined train split: IDs + ratings only
+  - data/processed/splits/books_splits_valid.parquet  Pre-defined validation split: IDs + ratings only
+  - data/processed/splits/books_splits_test.parquet   Pre-defined test split: IDs + ratings only
 
 Join key: all files share `parent_asin` as the canonical book identifier.
 """
@@ -22,7 +22,8 @@ import pyarrow.parquet as pq
 from datasets import load_dataset
 
 DATASET_NAME = "McAuley-Lab/Amazon-Reviews-2023"
-OUTPUT_DIR = Path("data/processed")
+FULL_DIR = Path("data/processed/full")
+SPLITS_DIR = Path("data/processed/splits")
 BATCH_SIZE = 100_000  # Number of records to hold in memory at once before writing
 
 # Configs loaded with split="full" (no pre-defined train/valid/test split).
@@ -136,14 +137,15 @@ def main():
         2. books_metadata.parquet   -- book-level metadata (~4.4M rows)
         3. books_splits_train/valid/test.parquet -- ID-only interaction splits
     """
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    FULL_DIR.mkdir(parents=True, exist_ok=True)
+    SPLITS_DIR.mkdir(parents=True, exist_ok=True)
 
     # Stream full (unsplit) configs: reviews and metadata
     for source in FULL_SOURCES:
         stream_to_parquet(
             config=source["config"],
             split="full",
-            output_path=OUTPUT_DIR / source["output"],
+            output_path=FULL_DIR / source["output"],
             drop_cols=source["drop_cols"],
         )
 
@@ -152,7 +154,7 @@ def main():
         stream_to_parquet(
             config=SPLIT_CONFIG,
             split=split,
-            output_path=OUTPUT_DIR / f"books_splits_{split}.parquet",
+            output_path=SPLITS_DIR / f"books_splits_{split}.parquet",
             drop_cols=set(),  # Keep all columns; this config has no cols to drop
         )
 

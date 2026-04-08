@@ -9,9 +9,9 @@ Expected input files in data/raw/:
   - Books.jsonl.gz        Review text and ratings (29.5M rows)
   - meta_Books.jsonl.gz   Book-level metadata (4.4M rows)
 
-Output files (written to data/processed/):
-  - books_reviews.parquet     Same schema as produced by load_data.py
-  - books_metadata.parquet    Same schema as produced by load_data.py
+Output files:
+  - data/processed/full/books_reviews.parquet     Same schema as produced by load_data.py
+  - data/processed/full/books_metadata.parquet    Same schema as produced by load_data.py
 
 Join key: both files share `parent_asin` as the canonical book identifier.
 """
@@ -25,7 +25,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 RAW_DIR = Path("data/raw")
-OUTPUT_DIR = Path("data/processed")
+OUTPUT_DIR = Path("data/processed/full")
 BATCH_SIZE = 100_000  # Number of records to hold in memory at once before writing
 
 SOURCES = [
