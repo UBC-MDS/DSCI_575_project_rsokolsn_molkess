@@ -8,3 +8,4 @@ dependencies:
   - ipykernel
   - pyarrow<14.0.0
   - datasets<3.0.0
+  - langchain==1.2.15
