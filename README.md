@@ -6,11 +6,35 @@ This Query Assistant allows the user to search books from the Amazon Reviews 202
 
 ## Usage
 
-### Environment Set Up
+### Set Up Environment Variables
+
+Note as of Milestone 1 there are no environment variables necessary so you can skip to the next section
 
 1. Copy `.env.sample` to `.env`
 2. Fill in your own values for each variable.
 3. `.env` is added to `.gitignore` so it is never committed to GitHub with secrets present.
+
+### Running the App
+
+1. Clone this respository and navigate to the directory in your terminal
+2. If this is your first time exploring this project install the conda environment. In your terminal run:
+
+```{bash}
+conda create -f environment.yml
+```
+
+3. Activate the environment
+
+```{bash}
+conda activate amazon_books_assistant
+```
+
+4. Run the app locally
+
+```{bash}
+streamlit run app/app.py
+```
+
 
 ## Disclosure of Use of Generative AI Agents
 
