@@ -2,7 +2,7 @@
 
 ## Project Description
 
-This Query Assistant allows the user to search books from the Amazon Reviews 2023 Books category.
+This Query Assistant allows the user to search books from the Amazon Reviews 2023 Books category. Due to the large amount of data throughout this project we worked with a 20,000 book subset of the data, sampled in the `src/create_sample.py` script.
 
 ## Usage
 
