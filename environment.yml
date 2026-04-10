@@ -3,9 +3,10 @@ channels:
   - conda-forge
 dependencies:
   - python==3.12
-  - pandas
+  - pandas==2.3.3
   - python-dotenv==1.2.2
-  - ipykernel
+  - ipykernel==7.2.0
   - pyarrow<14.0.0
   - datasets<3.0.0
   - langchain==1.2.15
+  - streamlit==1.55.0
