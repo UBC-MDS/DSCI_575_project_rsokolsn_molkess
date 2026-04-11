@@ -21,6 +21,10 @@ def custom_preprocess(text):
     text = [t for t in text if t not in stop_words]
     return text
 
+def load_retriever(retriever_path=index_path):
+    with open(retriever_path, "rb") as f:
+        return pickle.load(f)
+
 def build_retriever(doc_path, retriever_path):
    
     with open(doc_path, "rb") as f:
@@ -37,10 +41,10 @@ def build_retriever(doc_path, retriever_path):
         pickle.dump(retriever, f)
     print(f'Saved retriever for future use: {retriever_path}')
 
-def bm25_search(query='a book', k = 5, retriever_path = index_path):
+def bm25_search(query='a book', k = 5, retriever=None, retriever_path = index_path):
     
-    with open(retriever_path, "rb") as f: 
-        retriever = pickle.load(f)
+    if retriever is None:
+        retriever = load_retriever(retriever_path)
 
     tokenized_query = custom_preprocess(query)
 
@@ -48,8 +52,18 @@ def bm25_search(query='a book', k = 5, retriever_path = index_path):
     scores = retriever.vectorizer.get_scores(tokenized_query)
     top_k_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:k]
     results = [(retriever.docs[i], scores[i]) for i in top_k_indices]
-    return results
 
+    return [
+        {
+            "title": doc.metadata.get("title", ""),
+            "author": doc.metadata.get("author", ""),
+            "rating": doc.metadata.get("average_rating", ""),
+            "description": doc.metadata.get("description", ""),
+            "review": doc.metadata.get("review", ""),
+            "score": score,
+        }
+        for doc, score in results
+    ]
 
 def main():
     build_retriever(documents_path, index_path)
