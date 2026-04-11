@@ -10,7 +10,9 @@ def main():
     create_index(index_path=index_path)
 
 
-def semantic_search(query, k=5, index_path="data/processed/sampled/faiss_index"):
+def semantic_search(
+    query, k=5, vectorstore=None, index_path="data/processed/sampled/faiss_index"
+):
     """Search the FAISS index for documents semantically similar to the query.
 
     Parameters
@@ -19,18 +21,18 @@ def semantic_search(query, k=5, index_path="data/processed/sampled/faiss_index")
         The search string to embed and match against the index.
     k : int
         Number of top results to return.
+    vectorstore : FAISS, optional
+        A pre-loaded vectorstore. If None, one is loaded from index_path.
     index_path : str
-        Path to the saved FAISS index directory.
+        Path to the saved FAISS index directory. Used only if vectorstore is None.
 
     Returns
     -------
     list of dict
         Each dict has keys "title", "author", "rating", "review", and "score".
     """
-    embeddings = get_embedding_model()
-    vectorstore = FAISS.load_local(
-        index_path, embeddings, allow_dangerous_deserialization=True
-    )
+    if vectorstore is None:
+        vectorstore = load_vectorstore(index_path)
     docs_and_scores = vectorstore.similarity_search_with_score(query, k=k)
     return [
         {
@@ -83,6 +85,25 @@ def get_embedding_model():
         Embedding model wrapper used by LangChain to encode text into vectors.
     """
     return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+
+
+def load_vectorstore(index_path="data/processed/sampled/faiss_index"):
+    """Load the FAISS vectorstore and embedding model from disk.
+
+    Parameters
+    ----------
+    index_path : str
+        Path to the saved FAISS index directory.
+
+    Returns
+    -------
+    FAISS
+        The loaded vectorstore, ready for similarity search.
+    """
+    embeddings = get_embedding_model()
+    return FAISS.load_local(
+        index_path, embeddings, allow_dangerous_deserialization=True
+    )
 
 
 if __name__ == "__main__":
