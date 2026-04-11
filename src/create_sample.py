@@ -6,7 +6,7 @@ testing. Run this before testing any downstream scripts or notebooks so they
 can use the smaller sample instead of the full dataset.
 
 Process:
-    1. Samples 20,000 unique books from books_metadata.parquet.
+    1. Samples 10,000 unique books from books_metadata.parquet.
     2. Filters books_reviews.parquet to all reviews for those books using
        PyArrow filter pushdown, so the two sample files are self-consistent.
 
@@ -27,7 +27,7 @@ import pyarrow.parquet as pq
 
 FULL_DIR = Path("data/processed/full")
 SAMPLED_DIR = Path("data/processed/sampled")
-SAMPLE_SIZE = 20_000  # Number of unique books to sample
+SAMPLE_SIZE = 10_000  # Number of unique books to sample
 RANDOM_SEED = 42  # Fixed seed for reproducibility across runs
 
 

@@ -2,7 +2,11 @@
 
 ## Project Description
 
-This Query Assistant allows the user to search books from the Amazon Reviews 2023 Books category. Due to the large amount of data throughout this project we worked with a 20,000 book subset of the data, sampled in the `src/create_sample.py` script.
+This Query Assistant allows the user to search books from the Amazon Reviews 2023 Books category. With a simple UI, the user can select to search for books using either BM25 keyword search or semantic embedding search. The app then displays the top 5 books most relevant to the user's query.
+
+### The Data
+
+Due to the large amount of Amazon Books data, throughout this project we worked with a 10,000 book subset of the data, sampled in the `src/create_sample.py` script. This sample was then processed into LangChain documents using `src/document_processing.py`. Finally, these documents were transformed as necessary for information retrieval using the relevant `src/bm25.py` and `src/semantic.py` scripts. The sampled data and trained index files for both bm25 and semantic search can be found in `data/processed/sampled/`. This allows the user to simply run the application without having to run any of the data processing code themselves.
 
 ## Usage
 
@@ -34,7 +38,6 @@ conda activate amazon_books_assistant
 ```{bash}
 streamlit run app/app.py
 ```
-
 
 ## Disclosure of Use of Generative AI Agents
 
