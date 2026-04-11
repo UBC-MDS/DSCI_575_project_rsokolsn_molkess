@@ -10,3 +10,6 @@ dependencies:
   - datasets<3.0.0
   - langchain==1.2.15
   - streamlit==1.55.0
+  - sentence-transformers==5.4.0
+  - langchain-huggingface
+  - faiss-cpu
