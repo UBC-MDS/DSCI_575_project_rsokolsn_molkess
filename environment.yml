@@ -8,4 +8,8 @@ dependencies:
   - ipykernel==7.2.0
   - pyarrow<14.0.0
   - datasets<3.0.0
+  - langchain==1.2.15
   - streamlit==1.55.0
+  - sentence-transformers==5.4.0
+  - langchain-huggingface
+  - faiss-cpu
