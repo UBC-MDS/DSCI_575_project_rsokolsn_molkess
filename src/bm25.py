@@ -6,6 +6,7 @@ import pickle
 import re
 import nltk
 from nltk.corpus import stopwords
+
 nltk.download('stopwords')
 
 documents_path = "data/processed/sampled/documents.pickle"
@@ -41,15 +42,19 @@ def bm25_search(query='a book', k = 5, retriever_path = index_path):
     with open(retriever_path, "rb") as f: 
         retriever = pickle.load(f)
 
-    retriever.k = k
-    results = retriever.invoke(query)
+    tokenized_query = custom_preprocess(query)
 
+    # can't use .invoke() if we want to return the scores as well
+    scores = retriever.vectorizer.get_scores(tokenized_query)
+    top_k_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:k]
+    results = [(retriever.docs[i], scores[i]) for i in top_k_indices]
     return results
 
 
 def main():
     build_retriever(documents_path, index_path)
 
+    results = bm25_search()
 
 if __name__ == "__main__":
     main()
