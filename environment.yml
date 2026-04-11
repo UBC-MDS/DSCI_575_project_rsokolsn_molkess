@@ -12,4 +12,10 @@ dependencies:
   - streamlit==1.55.0
   - sentence-transformers==5.4.0
   - langchain-huggingface
+  - langchain-community
   - faiss-cpu
+  - nltk
+  - pip
+  - pip:
+    - rank_bm25
+
