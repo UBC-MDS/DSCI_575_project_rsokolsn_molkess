@@ -16,45 +16,41 @@ See `results/compare_results.ipynb` to view our interactive results analysis for
 
 **BM25** correctly retrieves 5 books that specifically mention Harry Potter in the title.
 
-**Semantic search** retrieves 3 books that specifically mention Harry Potter in the title, but also "Fanastic Beasts and Where to Find Them" which is part of the franchise but doesn't specifically mention Harry Potter in the title. It also retrieves "Kingdom of Carbonel", which is not part of the franchise.
+**Semantic search** retrieves 2 books that specifically mention Harry Potter in the title, but also "Fanastic Beasts and Where to Find Them" which is part of the franchise but doesn't specifically mention Harry Potter in the title. "Wizard's Hall" is apparently a different book that came out before Harry Potter and is very similar, so we can see the semantic search finding similar titles here. The Riddle of the New Testament does not seem related though.
 
-**Better: BM25** since it finds 5 harry potter books, while semantic search only finds 4.
+**Better: BM25** does better since it retrieves 5 related books, while semantic search only retrieves 3.
 
 ### `learn python programming beginner`
 
-**BM25** places *Practical Programming: An Introduction to Computer Science Using Python 3.6* at rank 1, which is a very relevant result. The next book also mentions "basics", which indicates it is beginner friendly, though it is not as related to normal beginner python even though it has the word "python" in it. The third book is a "For Dummies" book which indicates beginner friendly, but I'm not sure what BeagleBone is and whether it is Python related. The last two are python related but not specifically beginner friendly (based on their titles).
+**BM25** finds 3 books that are specifically Python related, though only the first result seems beginner friendly. The last two results seem to be beginner programming related, but no Python related.
 
-**Semantic search** leads with *101 Extra Python Challenges* which is not beginner friendly but is Python related. Similarlyl, Python: Essential Reference is very related to Python but is likely a more advanced reference guide. The 3rd and 4th results are the same as the 2nd and 1st results from BM25, respectively. The last result, Think Stats, is not very related to the search query.
+**Semantic search** leads with 101 Extra Python Challenges which is not beginner friendly but is Python related. After that is the same as the first result from BM25. The third result is python related but doesn't seem beginner friendly, and the fourth is beginner friendly but it's unclear whether it is specifically Python related. The fifth is related to coding but is for Scratch, not Python, and does not appear beginner friendly.
 
-**Better: BM25** as it's top result is the best one. The top results for semantic search are very Python related, but not good beginner books.
+**Better: BM25** as it's top result is the closest match to the search query. Both algorithms struggled a lot with matching the "beginner" part of the query.
 
 ### `overcoming grief after losing a loved one`
 
-This is the clearest demonstration of semantic search's advantage in the query set.
+**BM25** does return some grief related books (the 2nd and 4th are clearly grief related) but mostly the results seem unrelated. Interestingly, the 4th result appears the most related based on the title, yet it is only the 4th ranked. (Looking at semantic search, we can see that the same result is ranked 2nd.)
 
-**BM25** does return some grief related books (the 1st and 4th result are clearly grief related). I researched the second and third results and found that "Me For You" is a romantic fiction book with a main character who lost their spouse, so that is actually very relevant. I wasnt able to identify "Through It All" since there is no author. The last result seems to be the story of a missing person, so while it may be related to grief, I'm not sure it's necessarily about overcoming it after losing a loved one.
-
-**Semantic search** gets all five results really spot on, returning several books very specifically about grieving after the loss of a loved one.
+**Semantic search** gets all five results really spot on, returning several books very specifically about grieving after the loss of a loved one such as a child or partner.
 
 **Better: Semantic search** clearly does a better job of encoding the meaning of the search phrase and comes up with very relevant results.
 
 ### `self-help book for managing anxiety and stress at work`
 
-Both methods perform reasonably well here because the query contains a good mix of specific terms ("anxiety," "stress") that are also semantically meaningful.
+**BM25** top two recommendations seem very relevant to managing anxiety and stress based on their titles. I researched Emotional Core Therapy, the 3rd recommendation, which is about stress but appears to be more centered on relationships rather than work specifically. Loving Someone with OCD is not really a self-help book or about stress at work, and the complete credit repair kit is very off the mark. The last result is a coloring book for stress relief, which is related to the "stress" keyword but not much else in the query.
 
-**BM25** top three recommendations seem very relevant to managing anxiety and stress based on their titles. However, rank 5, Loving Someone with OCD, is a bit off target since it appears to be more about personal relationships than managing at work. I also researched Emotional Core Therapy, the 4th recommendation, which is about stress but appears to be more centered on relationships rather than work specifically. Also note that The Undivided Self and Emotional Core Therapy both appear to maybe be more technical books, discussing scientific techniques, rather than more non-technical self-help style.
+**Semantic search** picks the same top book, but it's recommendations for the 2nd and 3rd rank are much more relevant and clearly self-help style books. The 4th and 5th ranked books are less about stress and anxiety in the workplace, but are self-help type books about mental health in general. The 5th ranked book is the same as the 2nd ranked book in BM25.
 
-**Semantic search** picks the same top book and then Anxiety Antidotes in the second rank. It's suggestions for ranks 3 and 4 are also clearly related to managing your anxiety. The 5th rank book, Note to self, is more of a memoir about the author's struggle with depression and anxiety, so less of a good match since it is not a self-help book. Also note that the 4 top searches are very clearly self-help style books.
-
-**Better: Semantic search** does a better job with the lower ranked matches, though there is a lot of overlap in the matches of both methods.
+**Better: Semantic search** does a better job, producing 3 good top matches while BM25 only produces one good top match.
 
 ### `historical novel about World War 2 from a civilian perspective`
 
-**BM25** fails almost entirely. Its rank 1 result, *Caves, Cannons and Crinolines*, is a Civil War novel, not about World War 2. It likely matched because of "historical," "novel," and "War" in its metadata. Rank 2, Just War Reconsidered, is an academic military ethics textbook. None of the five BM25 results are WWII historical fiction. It seems that BM25 captured historical novel from the search term but not World War 2. Interestingly, very few of the exact search terms appear in the titles of returned books, so it seems that BM25 is needing to go into the descriptions and reviews more to find relevant matches than in previous searches.
+**BM25** fails entirely at capturing the World War 2 piece of the query. Its rank 1 result, *Caves, Cannons and Crinolines*, is a Civil War novel, not about World War 2. It likely matched because of "historical," "novel," and "War" in its metadata. Rank 2, Just War Reconsidered, is an academic military ethics textbook. None of the five BM25 results are about world war 2, though they do mostly appear to be historical novels about war. It seems that BM25 captured "historical novel" and "war" from the search term but not World War 2 specifically. Interestingly, very few of the exact search terms appear in the titles of returned books (besides "war"), so it seems that BM25 is needing to go into the descriptions and reviews more to find relevant matches than in previous searches.
 
-**Semantic search** correctly focuses on WWII across all five results. The first result, True Stories of World War II, seems like a very good match (I'm not sure if there are civilian perspectives inside, but it seems likely). The next four results are all about world war 2, but don't appear to be novels. It seems like semantic search captured the World War 2 portion of the query but not the historical novel piece.
+**Semantic search** correctly focuses on WWII across all five results but it seems to be pulling mostly academic books rather than novels. The 5th result, Raj and Norah, is a novel and is "a true story of love lost and found in WWII", which appears to actually be a very good match to the query, so it's odd that it is only in 5th place.
 
-**Better: Semantic search** gets the primary topic correct and has a promising first match. However, neither method handles multi-attribute constraints well. A hybrid approach with metadata filtering (e.g., filter to `category=fiction` before retrieval) might improve the results.
+**Better: Neither** algorithm gets a very good match. Semantic search manages to capture World War 2 in all of it's results, but not historical novel. BM25 seems to capture the historical novel part of the query and that they are looking for a war theme, but does not return any results about World War 2 in particular. Neither method appears to have captured the "civilian perspective" piece of the search query.
 
 ## 4.4 Summary of Insights
 
