@@ -39,6 +39,57 @@ conda activate amazon_books_assistant
 streamlit run app/app.py
 ```
 
+### Run complete project from start to finish
+
+1. Clone this respository and navigate to the directory in your terminal
+2. If this is your first time exploring this project install the conda environment. In your terminal run:
+
+```{bash}
+conda create -f environment.yml
+```
+
+3. Activate the environment
+
+```{bash}
+conda activate amazon_books_assistant
+```
+
+4. Run the script to download the complete datasets (This can take up to several hours)
+
+```{bash}
+python src/load_data.py
+```
+
+5. Run the script to create the sample dataset
+
+```{bash}
+python src/create_sample.py
+```
+
+6. Run the script to create pickle file of LangChain documents
+
+```{bash}
+python src/document_processing.py
+```
+
+7. Run the script to create the BM25 retriever file.
+
+```{bash}
+python src/bm25.py
+```
+
+8. Run the script to create FAISS Index files for semantic search
+
+```{bash}
+python src/semantic.py
+```
+
+9. Run the app locally
+
+```{bash}
+streamlit run app/app.py
+```
+
 ## Disclosure of Use of Generative AI Agents
 
 This project made use of agentic coding tools (including Claude Code) during development. These tools were used for inline code suggestions and debugging assistance, particularly for optimizing the codebase to efficiently handle the large Parquet datasets. All AI-suggested code was reviewed, tested, and understood by the human authors before being incorporated into the project. The human authors take full responsibility for all code and content published in this repository, regardless of what tools were used during development.
