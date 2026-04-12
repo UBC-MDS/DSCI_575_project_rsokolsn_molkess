@@ -67,6 +67,8 @@ streamlit run app/app.py
 
 ### Run complete project from start to finish
 
+Note: You do not need to run the complete project in order to use the app. Completing this workflow will likely take several hours due to the size of the full dataset. The pickle file of LangChain documents, the BM25 retriever file, and the FAISS index file of the 10,000 book sample are all stored in the Github repository and are downloaded when you cloned the repo. You can run the app and explore the interactive analyses in `results/compare_results.ipynb` using these files. To run the EDA in `notebooks/milestone1_exploration.ipynb`, you will need to download the full dataset.
+
 1. Clone this respository and navigate to the directory in your terminal
 2. If this is your first time exploring this project install the conda environment. In your terminal run:
 
