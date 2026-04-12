@@ -8,6 +8,32 @@ This Query Assistant allows the user to search books from the Amazon Reviews 202
 
 Due to the large amount of Amazon Books data, throughout this project we worked with a 10,000 book subset of the data, sampled in the `src/create_sample.py` script. This sample was then processed into LangChain documents using `src/document_processing.py`. Finally, these documents were transformed as necessary for information retrieval using the relevant `src/bm25.py` and `src/semantic.py` scripts. The sampled data and trained index files for both bm25 and semantic search can be found in `data/processed/sampled/`. This allows the user to simply run the application without having to run any of the data processing code themselves.
 
+### Data Preproccesing
+
+For both BM25 and FAISS semantic searches we chose to build LangChain documents with a single document content string which is concatenated from the following fields: 
+
+- `metadata.title`
+- `metadata.subtitle`
+- `metadata.author`
+- `metadata.description` (joined if list)
+- `metadata.features` (joined if list)
+- `metadata.categories` (joined if list)
+- Aggregated `reviews.title` and `reviews.text` (concatenation of reviews per book)
+
+This concatenated string was then tokenized for BM25 and embedded for semantic search. Additionally, for BM25 keyword search, we additionally converted all of the content strings to lower case, removed any punctuation, and removed common words using the `nltk` stopwords corpus. 
+
+The `average_rating` and `parent_asin` (unique ID) will be stored as metadata for each document.
+
+### Search Algorithms
+
+#### BM25
+
+BM25 (Best Match 25) is a keyword-based algorithm which scores documents by how well they match a given query. Given a query, BM25 scores all documents in the index and returns the top matches ranked by relevance. It is fast, interpretable, and works well for exact keyword matches, but does not capture semantic meaning. This is becuase it uses a sparse vector representation of each document and query.
+
+#### FAISS
+
+Semantic search algorithms like FAISS use dense vector embeddings to find documents that are conceptually similar to a query, even when they share no keywords in common. Each document is converted into a high-dimensional vector using a pretrained language model, capturing its meaning rather than just its words. These vectors are stored in an index and are compared against a dense vector embedding of a given query. The algorithm uses euclidean distance to measure the similarity between vectors and returns the documents that are most similar to the query.
+
 ## Usage
 
 ### Set Up Environment Variables
