@@ -2,34 +2,45 @@ from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 
 
-def retrieve_documents(query, vectorstore, k=5):
-    retriever = vectorstore.as_retriever(
-        search_type="similarity",
-        search_kwargs={"k": k},
-    )
-
-    # Use in a chain
-    docs = retriever.invoke(query)
-    return docs
-
-
-def main():
-    index_path = "data/processed/sampled/faiss_index/"
+def retrieve_semantic_documents(
+    query, index_path="data/processed/sampled/faiss_index/", k=5
+):
     vectorstore = FAISS.load_local(
         index_path,
         HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2"),
         allow_dangerous_deserialization=True,
     )
-    query = "What are some good books about machine learning?"
-    results = retrieve_documents(query, vectorstore)
-    for i, doc in enumerate(results):
-        print(f"Result {i + 1}:")
-        print(f"Title: {doc.metadata.get('title', 'N/A')}")
-        print(f"Author: {doc.metadata.get('author', 'N/A')}")
-        print(f"Rating: {doc.metadata.get('average_rating', 'N/A')}")
-        print(f"Description: {doc.metadata.get('description', 'N/A')}")
-        print(f"Review: {doc.metadata.get('review', 'N/A')}")
-        print("-" * 40)
+
+    retriever = vectorstore.as_retriever(
+        search_type="similarity",
+        search_kwargs={"k": k},
+    )
+
+    docs = retriever.invoke(query)
+    return docs
+
+
+def build_context(docs):
+    context = ""
+    for doc in docs:
+        title = doc.metadata.get("title", "N/A")
+        author = doc.metadata.get("author", "N/A")
+        rating = doc.metadata.get("average_rating", "N/A")
+        sections = doc.page_content.split("§") if "§" in doc.page_content else []
+        description = doc.metadata.get("description", "N/A")
+        categories = sections[4] if len(sections) > 4 else "N/A"
+        features = sections[6] if len(sections) > 6 else "N/A"
+        review = sections[7] if len(sections) > 7 else "N/A"
+        context += f"Title: {title}\nAuthor: {author}\nRating: {rating}\nCategories: {categories}\nFeatures: {features}\nDescription: {description}\nReview: {review}\n\n"
+    return context
+
+
+def main():
+    # query = "What are some good books about machine learning?"
+    # results = retrieve_semantic_documents(query)
+    # context = build_context(results)
+    # print(context[:5000])  # Print the first 1000 characters of the context
+
     return
 
 

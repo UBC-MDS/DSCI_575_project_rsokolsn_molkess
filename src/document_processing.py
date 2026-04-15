@@ -7,7 +7,6 @@ import pickle
 import re
 from pathlib import Path
 
-import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 from langchain_core.documents import Document
@@ -91,8 +90,8 @@ def _extract_author_name(author):
     return ""
 
 
-def build_documents_string(file_path, review_df, snippet_length=200):
-    """Create LangChain documents for each book from the meta data. Each document's page_content is a concatenation of the title, subtitle, author, store, description, features, categories, and reviews. The metadata contains the parent_asin, title, author, average_rating, a snippet of the description, and a snippet of the first review.
+def build_documents_string(file_path, review_df):
+    """Create LangChain documents for each book from the meta data. Each document's page_content is sections joined by § in the order: title§subtitle§author§store§categories§description§features§reviews. The metadata contains the parent_asin, title, author, average_rating, and full description.
 
     Parameters
     ----------
@@ -100,8 +99,6 @@ def build_documents_string(file_path, review_df, snippet_length=200):
         Path to the meta_data file
     review_df : pandas DataFrame
         DataFrame of the reviews aggregated by parent_asin
-    snippet_length : int
-        Number of characters to include in the description and review snippets in the metadata
     """
 
     df = pq.read_table(
@@ -125,40 +122,22 @@ def build_documents_string(file_path, review_df, snippet_length=200):
     documents = []
 
     for index, row in df.iterrows():
-        page_content = (
-            row["title"]
-            + " "
-            + str(row["subtitle"])
-            + " "
-            + str(row["author_name"])
-            + " "
-            + str(row["store"])
-            + " "
-            + " ".join(row["categories"])
-            + " "
-            + " ".join(row["description"])
-            + " "
-            + " ".join(row["features"])
-            + " "
-            + str(row["reviews"])
-        )
+        features = " ".join(row["features"])
 
-        first_review = str(row["first_review"]) if pd.notna(row["first_review"]) else ""
-
-        review = (
-            first_review[:snippet_length] + "..."
-            if len(first_review) > snippet_length
-            else first_review
-        )
-
-        description_text = (
-            " ".join(row["description"]) if len(row["description"]) > 0 else ""
-        )
-
-        description = (
-            description_text[:snippet_length] + "..."
-            if len(description_text) > snippet_length
-            else description_text
+        # Sections joined by § so reviews can be re-extracted from page_content.
+        # Section order: title§subtitle§author§store§categories§description§features§reviews
+        # Expect § to be removed during embedding preprocessing, so it won't interfere with BM25 or semantic search.
+        page_content = "§".join(
+            [
+                row["title"],
+                str(row["subtitle"]),
+                str(row["author_name"]),
+                str(row["store"]),
+                " ".join(row["categories"]),
+                " ".join(row["description"]),
+                features,
+                str(row["reviews"]),
+            ]
         )
 
         doc = Document(
@@ -168,8 +147,7 @@ def build_documents_string(file_path, review_df, snippet_length=200):
                 "title": row["title"],
                 "author": row["author_name"],
                 "average_rating": row["average_rating"],
-                "review": review,
-                "description": description,
+                "blurb": features,
             },
         )
         documents.append(doc)
