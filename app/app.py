@@ -44,7 +44,9 @@ with loading.container():
         get_vectorstore()
 loading.empty()
 
-method = st.radio("Retrieval method", ["BM25 Keyword", "FAISS Semantic"], horizontal=True)
+method = st.radio(
+    "Retrieval method", ["BM25 Keyword", "FAISS Semantic"], horizontal=True
+)
 
 query = st.text_input("What kind of book are you looking for?")
 
@@ -58,12 +60,14 @@ if query:
     if method == "BM25 Keyword":
         retriever = get_retriever()
         results = bm25_search(query, retriever=retriever)
-        st.write(f"Note: a higher BM25 score means a closer keyword match")
+        st.write("Note: a higher BM25 score means a closer keyword match")
 
     elif method == "FAISS Semantic":
         vectorstore = get_vectorstore()
         results = semantic_search(query, vectorstore=vectorstore)
-        st.write(f"Note: FAISS semantic matching uses euclidean distance to score the matches. Thus, a lower score is better")
+        st.write(
+            "Note: FAISS semantic matching uses euclidean distance to score the matches. Thus, a lower score is better"
+        )
 
     if not results:
         st.info("No results found. Try a different query.")
@@ -79,9 +83,6 @@ if query:
                 score = book.get("score", "")
                 st.metric("Retrieval Score", f"{score:.3f}" if score != "" else "N/A")
             with col2:
-                if book.get("description"):
-                    st.markdown("**Description:**")
-                    st.caption(book["description"])
-                if book.get("review"):
-                    st.markdown("**Review:**")
-                    st.caption(book["review"])
+                if book.get("blurb"):
+                    desc = book["blurb"]
+                    st.caption(desc[:547] + "..." if len(desc) > 550 else desc)

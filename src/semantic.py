@@ -39,8 +39,7 @@ def semantic_search(
             "title": doc.metadata.get("title", ""),
             "author": doc.metadata.get("author", ""),
             "rating": doc.metadata.get("average_rating", ""),
-            "description": doc.metadata.get("description", ""),
-            "review": doc.metadata.get("review", ""),
+            "blurb": doc.metadata.get("blurb", ""),
             "score": score,
         }
         for doc, score in docs_and_scores
