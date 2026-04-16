@@ -1,7 +1,6 @@
 # Don't commit raw or processed data files
 *.jsonl.gz
 *.parquet
-data/processed/sampled/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
