@@ -1,6 +1,9 @@
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
+from dotenv import load_dotenv
+from langchain_groq import ChatGroq
 
+load_dotenv()
 
 def retrieve_semantic_documents(
     query, index_path="data/processed/sampled/faiss_index/", k=5
@@ -34,6 +37,9 @@ def build_context(docs):
         context += f"Title: {title}\nAuthor: {author}\nRating: {rating}\nCategories: {categories}\nFeatures: {features}\nDescription: {description}\nReview: {review}\n\n"
     return context
 
+def build_llm_pipeline():
+    llm = ChatGroq(model="llama-3.1-8b-instant")
+    return llm
 
 def main():
     # query = "What are some good books about machine learning?"
