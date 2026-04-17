@@ -19,6 +19,15 @@ def get_vectorstore():
     return load_vectorstore()
 
 
+# Cache the hybrid retriever so they only load once
+@st.cache_resource(show_spinner=False)
+def get_hybrid_retriever():
+    from src.hybrid import hybrid_retriever
+
+    return hybrid_retriever
+
+
+# Cache the LLM so it only loads once
 @st.cache_resource(show_spinner=False)
 def get_llm():
     from src.rag_pipeline import build_llm_pipeline
@@ -30,6 +39,12 @@ st.markdown(
     """
     <style>
         [data-testid="stSpinner"] > div { flex-direction: row-reverse; }
+        [data-testid="stTextInput"] [data-testid="stWidgetLabel"] p {
+            font-size: 1.5rem;
+        }
+        [data-testid="stRadio"] [data-testid="stWidgetLabel"] p {
+            font-size: 1.2rem;
+        }
     </style>
 """,
     unsafe_allow_html=True,
@@ -49,20 +64,32 @@ with loading.container():
         get_vectorstore()
 loading.empty()
 
+
+def _sync_to_rag():
+    st.session_state.rag_query = st.session_state.search_query
+
+
+def _sync_to_search():
+    st.session_state.search_query = st.session_state.rag_query
+
+
 search_tab, rag_tab = st.tabs(["Search", "RAG"])
 
 with search_tab:
+    query = st.text_input(
+        "What kind of book are you looking for?",
+        key="search_query",
+        on_change=_sync_to_rag,
+    )
     method = st.radio(
         "Retrieval method", ["BM25 Keyword", "FAISS Semantic"], horizontal=True
     )
-
-    query = st.text_input("What kind of book are you looking for?")
 
     if query:
         from src.bm25 import bm25_search
         from src.semantic import semantic_search
 
-        st.write(f"Top 5 results for _{query}_ using **{method}** searching")
+        st.subheader(f"{method} Retriever Results")
 
         if method == "BM25 Keyword":
             retriever = get_retriever()
@@ -97,28 +124,29 @@ with search_tab:
                         st.caption(desc[:547] + "..." if len(desc) > 550 else desc)
 
 with rag_tab:
-    rag_query = st.text_input("Ask a question about books", key="rag_query")
+    rag_query = st.text_input(
+        "What kind of book are you looking for?",
+        key="rag_query",
+        on_change=_sync_to_search,
+    )
 
     if rag_query:
-        from src.rag_pipeline import build_context, retrieve_semantic_documents
+        from src.prompts import build_prompt
+        from src.rag_pipeline import build_context
 
         with st.spinner("Retrieving documents and generating response..."):
-            docs = retrieve_semantic_documents(rag_query)
+            docs = get_hybrid_retriever()(rag_query)
             context = build_context(docs)
 
             llm = get_llm()
-            prompt = (
-                "You are a helpful book recommendation assistant. "
-                "Based on the following book information, answer the user's question.\n\n"
-                f"Context:\n{context}\n"
-                f"Question: {rag_query}\n\n"
-                "Answer:"
-            )
+            prompt = build_prompt(rag_query, context)
             response = llm.invoke(prompt)
+
+        st.subheader("LLM Suggestion")
 
         st.write(response.content)
 
-        st.subheader("Source Documents")
+        st.subheader("Hybrid Retriever Results (Source Documents)")
         for doc in docs:
             with st.container(border=True):
                 title = doc.metadata.get("title", "N/A")

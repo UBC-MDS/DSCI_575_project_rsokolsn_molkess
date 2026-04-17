@@ -1,8 +1,8 @@
-from bm25 import (  # noqa: F401 — custom_preprocess needed for pickle deserialization
+from src.bm25 import (  # noqa: F401
     custom_preprocess,
     load_retriever,
 )
-from rag_pipeline import retrieve_semantic_documents
+from src.rag_pipeline import retrieve_semantic_documents
 
 
 def bm25_retriever(query, index_path="data/processed/sampled/retriever.pickle", k=5):
