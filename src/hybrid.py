@@ -67,12 +67,12 @@ def hybrid_retriever(query, index_path="data/processed/sampled/retriever.pickle"
 
 
 def main():
-    from rag_pipeline import build_context
+    # from rag_pipeline import build_context
 
-    query = "What are some good books about machine learning?"
-    results = hybrid_retriever(query)
-    context = build_context(results)
-    print(context)
+    # query = "What are some good books about machine learning?"
+    # results = hybrid_retriever(query)
+    # context = build_context(results)
+    # print(context)
     return
 
 
