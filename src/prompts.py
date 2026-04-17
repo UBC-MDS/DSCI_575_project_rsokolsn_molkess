@@ -9,6 +9,8 @@
 #     You are an Amazon assistant to shop for books. Using only the context provided, answer the question by recommending 1 to 2 books. If the question can't be answered using the context, say that the information is not available in the data you have access to. Be concise and reference specific book titles along with a brief justification.
 #     """
 
+from langchain_core.prompts import ChatPromptTemplate
+
 SYSTEM_PROMPT = """
     You are a helpful Amazon assistant to shop for books. 
     Answer the question using ONLY the following context, which contains real book product listings with title, author, average rating, categories, description, features, and reviews.
@@ -17,16 +19,21 @@ SYSTEM_PROMPT = """
     """
 
 
-def build_prompt(query, context):
-    return f"""{SYSTEM_PROMPT}
-        context:
-        {context}
+def build_prompt():
 
-        question: 
-        {query}
+    prompt = ChatPromptTemplate.from_template(
+        SYSTEM_PROMPT +
+        """
+Context:
+{context}
 
-        Answer based on the Amazon datasets: """
+Question:
+{question}
 
+Answer based on the Amazon dataset:
+        """
+    )
+    return prompt
 
 def main():
     return
