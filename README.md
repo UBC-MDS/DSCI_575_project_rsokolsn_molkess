@@ -38,11 +38,19 @@ Semantic search algorithms like FAISS use dense vector embeddings to find docume
 
 ### Set Up Environment Variables
 
-Note as of Milestone 1 there are no environment variables necessary so you can skip to the next section
+For Milestone 2, you must add your groq API key in order to use LLM search in the web app. To do so, follow the instructions below.
+
+#### Generate the key
+
+1. Navigate to [](https://console.groq.com/keys) and sign in or set up an account.
+2. Click "Create API Key". Name the key and set the expiration to whatever you want. Copy the key.
+
+#### Add the key to the `.env` file
 
 1. Copy `.env.sample` to `.env`
-2. Fill in your own values for each variable.
-3. `.env` is added to `.gitignore` so it is never committed to GitHub with secrets present.
+2. Inside `.env`, replace "your-groq-api-key" with your copied key, wrapped in double quotes.
+
+Note: `.env` is added to `.gitignore` so it is never committed to GitHub with secrets present.
 
 ### Running the App
 
