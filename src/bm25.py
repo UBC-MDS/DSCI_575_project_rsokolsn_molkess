@@ -9,7 +9,11 @@ import nltk
 from langchain_community.retrievers import BM25Retriever
 from nltk.corpus import stopwords
 
-nltk.download("stopwords")
+# Only download stopwords if not already present, to avoid unnecessary downloads during imports or multiple runs
+try:
+    nltk.data.find("corpora/stopwords")
+except LookupError:
+    nltk.download("stopwords", quiet=True)
 
 documents_path = "data/processed/sampled/documents.pickle"
 index_path = "data/processed/sampled/retriever.pickle"
