@@ -2,7 +2,7 @@
 
 ## Project Description
 
-This Query Assistant allows the user to search books from the Amazon Reviews 2023 Books category. With a simple UI, the user has the option of vanilla information retrieval via the Search Tab or using RAG to get a more conversational response. When using the search option, the user can select to search for books using either BM25 keyword search or semantic embedding search. The app then displays the top 5 books most relevant to the user's query. Using the RAG option, an LLM uses the returned items from a Hybrid search and provides an explanation for which books are most relevant to the user's query.
+This Query Assistant allows the user to search books from the Amazon Reviews 2023 Books category. With a simple UI, the user has the option of vanilla information retrieval via the Search Tab or using RAG to get a more conversational response. When using the search option, the user can select to search for books using either BM25 keyword search or semantic embedding search. The app then displays the top 5 books most relevant to the user's query. Using the RAG option, an LLM uses the returned items from a Hybrid search and provides an explanation for which books are most relevant to the user's query. Explanation of LLM choice can be found in `milestone2_discussion.md`
 
 ![Hybrid RAG Diagram](img/RAG%20diagram.png)
 
