@@ -19,6 +19,10 @@ documents_path = "data/processed/sampled/documents.pickle"
 index_path = "data/processed/sampled/retriever.pickle"
 
 
+def main():
+    build_retriever(documents_path, index_path)
+
+
 def custom_preprocess(text):
     stop_words = set(stopwords.words("english"))
     text = text.lower()
@@ -71,12 +75,6 @@ def bm25_search(query="a book", k=5, retriever=None, retriever_path=index_path):
         }
         for doc, score in results
     ]
-
-
-def main():
-    build_retriever(documents_path, index_path)
-
-    results = bm25_search()
 
 
 if __name__ == "__main__":

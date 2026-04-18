@@ -1,17 +1,27 @@
-import sys
 import os
-from langchain_core.runnables import RunnablePassthrough, chain
-from langchain_core.output_parsers import StrOutputParser
+import sys
+
 from dotenv import load_dotenv
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough, chain
 from langchain_groq import ChatGroq
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from src.semantic import load_vectorstore
 from src.prompts import build_prompt
+from src.semantic import load_vectorstore
 
-load_dotenv()
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
-def build_semantic_retriever(index_path="data/processed/sampled/faiss_index/", k=5):
+
+def main():
+    query = "What should I get for my 6th grade niece who loves dinosaurs?"
+    retriever = semantic_retriever()
+    rag_chain = build_rag_chain(retriever)
+    answer = rag_chain.invoke(query)
+    print(answer)
+
+
+def semantic_retriever(path="data/processed/sampled/faiss_index/", k=5):
     """Builds retriever using semantic vectorstore from semantic information retrieval
 
     Parameters
@@ -25,16 +35,18 @@ def build_semantic_retriever(index_path="data/processed/sampled/faiss_index/", k
     -------
     LangChain retriever
     """
-    vectorstore = load_vectorstore(index_path)
+    vectorstore = load_vectorstore(path)
     retriever = vectorstore.as_retriever(
         search_type="similarity",
         search_kwargs={"k": k},
     )
     return retriever
 
-def retrieve_semantic_documents(retriever, query):
+
+def retrieve_documents(retriever, query):
     docs = retriever.invoke(query)
     return docs
+
 
 @chain
 def build_context(docs):
@@ -61,9 +73,11 @@ def build_context(docs):
         context += f"Title: {title}\nAuthor: {author}\nRating: {rating}\nCategories: {categories}\nFeatures: {features}\nDescription: {description}\nReview: {review}\n\n"
     return context
 
+
 def build_llm_pipeline():
     llm = ChatGroq(model="llama-3.1-8b-instant")
     return llm
+
 
 def build_rag_chain(retriever):
     """Builds the RAG pipeline object using the input retriever, prompt template, context building function, and llm
@@ -80,24 +94,12 @@ def build_rag_chain(retriever):
     llm = build_llm_pipeline()
     prompt = build_prompt()
     rag_chain = (
-    {
-        "context": retriever | build_context,
-        "question": RunnablePassthrough()
-    }
-    | prompt
-    | llm
-    | StrOutputParser()
+        {"context": retriever | build_context, "question": RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
     )
     return rag_chain
-
-
-def main():
-    query = "What should I get for my 6th grade niece who loves dinosaurs?"
-    retriever = build_semantic_retriever()
-    rag_chain = build_rag_chain(retriever)
-    answer = rag_chain.invoke(query)
-    #print(context[:5000])  # Print the first 1000 characters of the context
-    print(answer)
 
 
 if __name__ == "__main__":
