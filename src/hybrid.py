@@ -1,8 +1,10 @@
+from langchain_core.runnables import chain
+
+from rag_pipeline import build_semantic_retriever, retrieve_semantic_documents
 from src.bm25 import (  # noqa: F401
     custom_preprocess,
     load_retriever,
 )
-from src.rag_pipeline import retrieve_semantic_documents
 
 
 def bm25_retriever(query, index_path="data/processed/sampled/retriever.pickle", k=5):
@@ -46,7 +48,8 @@ def reciprocal_rank_fusion(ranked_lists, k_constant=60):
     return [doc_map[key] for key in sorted_keys]
 
 
-def hybrid_retriever(query, index_path="data/processed/sampled/retriever.pickle", k=5):
+@chain
+def hybrid_retriever(query):
     """Retrieve the top-k documents by combining BM25 and semantic search via RRF.
 
     Runs both retrievers independently with k candidates each, then fuses the
@@ -54,25 +57,25 @@ def hybrid_retriever(query, index_path="data/processed/sampled/retriever.pickle"
 
     Args:
         query: Search string.
-        index_path: Path to the pickled BM25Retriever.
-        k: Number of documents to return.
 
     Returns:
         List of LangChain Document objects ranked by RRF score.
     """
-    bm25_results = bm25_retriever(query, index_path=index_path, k=k)
-    semantic_results = retrieve_semantic_documents(query, k=k)
-    combined_results = reciprocal_rank_fusion([bm25_results, semantic_results])[:k]
+    bm25_results = bm25_retriever(query, k=5)
+    semantic_retriever = build_semantic_retriever(k=5)
+    semantic_results = retrieve_semantic_documents(semantic_retriever, query)
+    combined_results = reciprocal_rank_fusion([bm25_results, semantic_results])[:5]
     return combined_results
 
 
 def main():
-    # from rag_pipeline import build_context
+    from rag_pipeline import build_rag_chain
 
-    # query = "What are some good books about machine learning?"
-    # results = hybrid_retriever(query)
-    # context = build_context(results)
-    # print(context)
+    query = "What are some good books about machine learning?"
+    rag_chain = build_rag_chain(hybrid_retriever)
+    answer = rag_chain.invoke(query)
+    print(answer)
+
     return
 
 
