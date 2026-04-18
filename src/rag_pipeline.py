@@ -13,7 +13,15 @@ from src.semantic import load_vectorstore
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 
-def build_semantic_retriever(index_path="data/processed/sampled/faiss_index/", k=5):
+def main():
+    query = "What should I get for my 6th grade niece who loves dinosaurs?"
+    retriever = semantic_retriever()
+    rag_chain = build_rag_chain(retriever)
+    answer = rag_chain.invoke(query)
+    print(answer)
+
+
+def semantic_retriever(path="data/processed/sampled/faiss_index/", k=5):
     """Builds retriever using semantic vectorstore from semantic information retrieval
 
     Parameters
@@ -27,7 +35,7 @@ def build_semantic_retriever(index_path="data/processed/sampled/faiss_index/", k
     -------
     LangChain retriever
     """
-    vectorstore = load_vectorstore(index_path)
+    vectorstore = load_vectorstore(path)
     retriever = vectorstore.as_retriever(
         search_type="similarity",
         search_kwargs={"k": k},
@@ -35,7 +43,7 @@ def build_semantic_retriever(index_path="data/processed/sampled/faiss_index/", k
     return retriever
 
 
-def retrieve_semantic_documents(retriever, query):
+def retrieve_documents(retriever, query):
     docs = retriever.invoke(query)
     return docs
 
@@ -92,14 +100,6 @@ def build_rag_chain(retriever):
         | StrOutputParser()
     )
     return rag_chain
-
-
-def main():
-    query = "What should I get for my 6th grade niece who loves dinosaurs?"
-    retriever = build_semantic_retriever()
-    rag_chain = build_rag_chain(retriever)
-    answer = rag_chain.invoke(query)
-    print(answer)
 
 
 if __name__ == "__main__":

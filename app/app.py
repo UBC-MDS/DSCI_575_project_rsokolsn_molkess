@@ -1,10 +1,9 @@
 import os
 import sys
 
-import streamlit as st
-
-# get the search algorithms
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
+import streamlit as st
 
 
 # Cache the BM25 retriever so it only loads once
@@ -17,22 +16,6 @@ def get_retriever():
 @st.cache_resource(show_spinner=False)
 def get_vectorstore():
     return load_vectorstore()
-
-
-# Cache the hybrid retriever so they only load once
-@st.cache_resource(show_spinner=False)
-def get_hybrid_retriever():
-    from src.hybrid import hybrid_retriever
-
-    return hybrid_retriever
-
-
-# Cache the LLM so it only loads once
-@st.cache_resource(show_spinner=False)
-def get_llm():
-    from src.rag_pipeline import build_llm_pipeline
-
-    return build_llm_pipeline()
 
 
 st.markdown(
@@ -58,6 +41,8 @@ with loading.container():
     with st.spinner("Loading search indexes. Please wait..."):
         # Importing search functions here to avoid blank screen while importing (if imported at top, they import before the loading message is shown and cause a mostly blank screen for a few seconds)
         from src.bm25 import custom_preprocess, load_retriever
+        from src.hybrid import hybrid_retriever
+        from src.rag_pipeline import build_rag_chain, retrieve_documents
         from src.semantic import load_vectorstore
 
         get_retriever()
@@ -76,7 +61,7 @@ def _sync_to_search():
 search_tab, rag_tab = st.tabs(["Search", "RAG"])
 
 with search_tab:
-    query = st.text_input(
+    search_query = st.text_input(
         "What kind of book are you looking for?",
         key="search_query",
         on_change=_sync_to_rag,
@@ -85,7 +70,7 @@ with search_tab:
         "Retrieval method", ["BM25 Keyword", "FAISS Semantic"], horizontal=True
     )
 
-    if query:
+    if search_query:
         from src.bm25 import bm25_search
         from src.semantic import semantic_search
 
@@ -93,12 +78,12 @@ with search_tab:
 
         if method == "BM25 Keyword":
             retriever = get_retriever()
-            results = bm25_search(query, retriever=retriever)
+            results = bm25_search(search_query, retriever=retriever)
             st.write("Note: a higher BM25 score means a closer keyword match")
 
         elif method == "FAISS Semantic":
             vectorstore = get_vectorstore()
-            results = semantic_search(query, vectorstore=vectorstore)
+            results = semantic_search(search_query, vectorstore=vectorstore)
             st.write(
                 "Note: FAISS semantic matching uses euclidean distance to score the matches. Thus, a lower score is better"
             )
@@ -131,20 +116,14 @@ with rag_tab:
     )
 
     if rag_query:
-        from src.prompts import build_prompt
-        from src.rag_pipeline import build_context
-
         with st.spinner("Retrieving documents and generating response..."):
-            docs = get_hybrid_retriever()(rag_query)
-            context = build_context(docs)
-
-            llm = get_llm()
-            prompt = build_prompt(rag_query, context)
-            response = llm.invoke(prompt)
+            retriever = hybrid_retriever
+            response = build_rag_chain(retriever).invoke(rag_query)
+            docs = retrieve_documents(retriever, rag_query)
 
         st.subheader("LLM Suggestion")
 
-        st.write(response.content)
+        st.write(response)
 
         st.subheader("Hybrid Retriever Results (Source Documents)")
         for doc in docs:

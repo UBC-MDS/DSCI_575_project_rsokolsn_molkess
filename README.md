@@ -22,7 +22,7 @@ For both BM25 and FAISS semantic searches we chose to build LangChain documents 
 
 This concatenated string was then tokenized for BM25 and embedded for semantic search. Additionally, for BM25 keyword search, we additionally converted all of the content strings to lower case, removed any punctuation, and removed common words using the `nltk` stopwords corpus. 
 
-The `average_rating` and `parent_asin` (unique ID) will be stored as metadata for each document.
+The `average_rating`, `parent_asin` (unique ID), `features` (named blurb), and `title` will be stored as metadata for each document.
 
 ### Search Algorithms
 
@@ -38,7 +38,7 @@ Semantic search algorithms like FAISS use dense vector embeddings to find docume
 
 ### Set Up Environment Variables
 
-For Milestone 2, you must add your groq API key in order to use LLM search in the web app. To do so, follow the instructions below.
+For Milestone 2, you must add your Groq API key in order to use LLM search in the web app. To do so, follow the instructions below.
 
 #### Generate the key
 
@@ -47,8 +47,8 @@ For Milestone 2, you must add your groq API key in order to use LLM search in th
 
 #### Add the key to the `.env` file
 
-1. Copy `.env.sample` to `.env`
-2. Inside `.env`, replace "your-groq-api-key" with your copied key, wrapped in double quotes.
+1. Copy `.env.sample` to `.env`.
+2. Inside `.env`, replace "your-groq-api-key" with your copied key, wrapped in double quotes, and save the file.
 
 Note: `.env` is added to `.gitignore` so it is never committed to GitHub with secrets present.
 

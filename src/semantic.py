@@ -6,8 +6,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 def main():
     """Build the FAISS index. This should be run once after the documents pickle is created. It will load the documents, create the index, and save it to disk."""
-    index_path = "data/processed/sampled/faiss_index"
-    create_index(index_path=index_path)
+    create_index()
 
 
 def semantic_search(
