@@ -75,6 +75,20 @@ conda activate amazon_books_assistant
 streamlit run app/app.py
 ```
 
+### RAG
+
+We implemented two RAG pipelines. One using a semantic retriever and the other using a custom built hybrid retriever. To use the semantic pipeline:
+
+1. Follow the instructions above to set up the conda environment and set up your Groq API key.
+2. Enter your query on line 17 of the `rag_pipeline.py` script. Save the script.
+3. In your terminal navigate to the repository directory and run:
+
+```{bash}
+python src/rag_pipeline.py
+```
+
+The Hybrid RAG pipeline which uses a custom built hybrid retriver with a reciprocal rank function combining the keyword and semantic searches can most easily be used via the web app.
+
 ### Run complete project from start to finish
 
 Note: You do not need to run the complete project in order to use the app. Completing this workflow will likely take several hours due to the size of the full dataset. The pickle file of LangChain documents, the BM25 retriever file, and the FAISS index file of the 10,000 book sample are all stored in the Github repository and are downloaded when you cloned the repo. You can run the app and explore the interactive analyses in `results/compare_results.ipynb` using these files. To run the EDA in `notebooks/milestone1_exploration.ipynb`, you will need to download the full dataset.
