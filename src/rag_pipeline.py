@@ -32,6 +32,10 @@ def build_semantic_retriever(index_path="data/processed/sampled/faiss_index/", k
     )
     return retriever
 
+def retrieve_semantic_documents(retriever, query):
+    docs = retriever.invoke(query)
+    return docs
+
 @chain
 def build_context(docs):
     """Formats relevant documents and information for the LLM to use as RAG context
