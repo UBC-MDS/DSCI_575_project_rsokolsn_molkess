@@ -49,7 +49,7 @@ For Milestone 2, you must add your Groq API key in order to use LLM search in th
 
 #### Add the key to the `.env` file
 
-1. Copy `.env.sample` to `.env`.
+1. Copy `.env.example` to `.env`.
 2. Inside `.env`, replace "your-groq-api-key" with your copied key, wrapped in double quotes, and save the file.
 
 Note: `.env` is added to `.gitignore` so it is never committed to GitHub with secrets present.
@@ -60,7 +60,7 @@ Note: `.env` is added to `.gitignore` so it is never committed to GitHub with se
 2. If this is your first time exploring this project install the conda environment. In your terminal run:
 
 ```{bash}
-conda create -f environment.yml
+conda env create -f environment.yml
 ```
 
 3. Activate the environment
