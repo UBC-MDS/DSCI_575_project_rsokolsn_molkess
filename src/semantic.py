@@ -1,7 +1,13 @@
+"""
+Builds and queries a FAISS vector index for semantic similarity search over book documents.
+"""
+
 import pickle
 
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
+
+from src.config import DOCUMENTS_PATH, FAISS_INDEX_PATH
 
 
 def main():
@@ -9,9 +15,7 @@ def main():
     create_index()
 
 
-def semantic_search(
-    query, k=5, vectorstore=None, index_path="data/processed/sampled/faiss_index"
-):
+def semantic_search(query, k=5, vectorstore=None, index_path=FAISS_INDEX_PATH):
     """Search the FAISS index for documents semantically similar to the query.
 
     Parameters
@@ -46,8 +50,8 @@ def semantic_search(
 
 
 def create_index(
-    index_path="data/processed/sampled/faiss_index",
-    documents_path="data/processed/sampled/documents.pickle",
+    index_path=FAISS_INDEX_PATH,
+    documents_path=DOCUMENTS_PATH,
 ):
     """Build a FAISS index from the documents pickle and save it to disk.
 
@@ -70,7 +74,7 @@ def create_index(
     vectorstore = FAISS.from_documents(documents, embeddings)
 
     print(f"Saving index to {index_path}...")
-    vectorstore.save_local(index_path)
+    vectorstore.save_local(str(index_path))
     print("Index saved.")
 
 
@@ -85,7 +89,7 @@ def get_embedding_model():
     return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 
-def load_vectorstore(index_path="data/processed/sampled/faiss_index"):
+def load_vectorstore(index_path=FAISS_INDEX_PATH):
     """Load the FAISS vectorstore and embedding model from disk.
 
     Parameters
@@ -100,7 +104,7 @@ def load_vectorstore(index_path="data/processed/sampled/faiss_index"):
     """
     embeddings = get_embedding_model()
     return FAISS.load_local(
-        index_path, embeddings, allow_dangerous_deserialization=True
+        str(index_path), embeddings, allow_dangerous_deserialization=True
     )
 
 

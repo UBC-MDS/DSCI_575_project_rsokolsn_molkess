@@ -11,22 +11,20 @@ Process:
        PyArrow filter pushdown, so the two sample files are self-consistent.
 
 Output files:
-    - data/processed/sampled/books_metadata_sample.parquet  50K sampled books
+    - data/processed/sampled/books_metadata_sample.parquet  10,000 sampled books
     - data/processed/sampled/books_reviews_sample.parquet   All reviews for those books
 
 Prerequisites:
-    Run src/load_data.py or src/process_raw_data.py first to generate the full
-    Parquet files.
+    Run src/load_data.py first to generate the full Parquet files.
 """
 
 import random
-from pathlib import Path
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-FULL_DIR = Path("data/processed/full")
-SAMPLED_DIR = Path("data/processed/sampled")
+from src.config import METADATA_SAMPLE_PATH, REVIEWS_SAMPLE_PATH, SAMPLED_DIR
+
 SAMPLE_SIZE = 10_000  # Number of unique books to sample
 RANDOM_SEED = 42  # Fixed seed for reproducibility across runs
 
@@ -73,19 +71,25 @@ def sample_parquet(path, n, seed):
 
 
 def main():
-    metadata_path = FULL_DIR / "books_metadata.parquet"
-    reviews_path = FULL_DIR / "books_reviews.parquet"
+    """Sample books from the full dataset and save sampled parquet files.
 
-    if not metadata_path.exists():
-        raise FileNotFoundError(f"{metadata_path} not found. Run src/load_data.py.")
-    if not reviews_path.exists():
-        raise FileNotFoundError(f"{reviews_path} not found. Run src/load_data.py.")
+    Reads the full metadata and reviews parquet files, samples SAMPLE_SIZE unique
+    books, filters reviews to those books, and writes both to SAMPLED_DIR.
+    """
+    if not METADATA_SAMPLE_PATH.exists():
+        raise FileNotFoundError(
+            f"{METADATA_SAMPLE_PATH} not found. Run src/load_data.py."
+        )
+    if not REVIEWS_SAMPLE_PATH.exists():
+        raise FileNotFoundError(
+            f"{REVIEWS_SAMPLE_PATH} not found. Run src/load_data.py."
+        )
 
     SAMPLED_DIR.mkdir(parents=True, exist_ok=True)
 
     # --- Metadata sample ---
     print("Sampling metadata...")
-    metadata_sample = sample_parquet(metadata_path, SAMPLE_SIZE, RANDOM_SEED)
+    metadata_sample = sample_parquet(METADATA_SAMPLE_PATH, SAMPLE_SIZE, RANDOM_SEED)
     out_metadata = SAMPLED_DIR / "books_metadata_sample.parquet"
     metadata_sample.to_parquet(out_metadata, index=False)
     print(f"  {len(metadata_sample):,} books saved to {out_metadata}")
@@ -97,7 +101,7 @@ def main():
     sampled_asins = metadata_sample["parent_asin"].unique().tolist()
     print("\nFiltering reviews to sampled books...")
     reviews_sample = pq.read_table(
-        reviews_path,
+        REVIEWS_SAMPLE_PATH,
         filters=[("parent_asin", "in", sampled_asins)],
     ).to_pandas()
     out_reviews = SAMPLED_DIR / "books_reviews_sample.parquet"

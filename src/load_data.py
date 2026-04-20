@@ -15,15 +15,14 @@ Join key: all files share `parent_asin` as the canonical book identifier.
 """
 
 from itertools import islice
-from pathlib import Path
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 from datasets import load_dataset
 
+from src.config import FULL_DIR, SPLITS_DIR
+
 DATASET_NAME = "McAuley-Lab/Amazon-Reviews-2023"
-FULL_DIR = Path("data/processed/full")
-SPLITS_DIR = Path("data/processed/splits")
 BATCH_SIZE = 100_000  # Number of records to hold in memory at once before writing
 
 # Configs loaded with split="full" (no pre-defined train/valid/test split).

@@ -9,12 +9,14 @@ import streamlit as st
 # Cache the BM25 retriever so it only loads once
 @st.cache_resource(show_spinner=False)
 def get_retriever():
+    """Load and cache the BM25 retriever for the lifetime of the Streamlit session."""
     return load_retriever()
 
 
 # Cache the FAISS vectorstore and embedding model so they only load once
 @st.cache_resource(show_spinner=False)
 def get_vectorstore():
+    """Load and cache the FAISS vectorstore for the lifetime of the Streamlit session."""
     return load_vectorstore()
 
 
@@ -51,10 +53,12 @@ loading.empty()
 
 
 def _sync_to_rag():
+    """Copy the search tab query into the RAG tab input to keep them in sync."""
     st.session_state.rag_query = st.session_state.search_query
 
 
 def _sync_to_search():
+    """Copy the RAG tab query into the search tab input to keep them in sync."""
     st.session_state.search_query = st.session_state.rag_query
 
 

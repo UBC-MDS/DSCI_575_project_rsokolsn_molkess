@@ -50,6 +50,11 @@ def format_results(results):
 
 
 def main():
+    """Run all queries from the CSV through BM25, semantic search, and RAG, and save results.
+
+    Loads queries.csv, runs each query through all three retrieval methods, writes
+    results back to the same CSV file.
+    """
     df = pd.read_csv(CSV_PATH)
 
     print("Loading retrievers...")

@@ -1,29 +1,14 @@
 """
-Converts reviews and metadata into tokenized and embedded documents ready for search
+Converts reviews and metadata into tokenized and embedded documents ready for search.
 """
 
 import ast
 import pickle
-import re
-from pathlib import Path
 
-import pyarrow as pa
 import pyarrow.parquet as pq
 from langchain_core.documents import Document
 
-# Starting running only with the sample and once it's working try with the full corpus
-# DATA_DIR = Path("../data/processed/full")
-# reviews_path = DATA_DIR / "books_reviews.parquet"
-# metadata_path = DATA_DIR / "books_metadata.parquet"
-
-# # Open file handles — reads only the Parquet footer (schema + row group stats), not any row data.
-# reviews_file = pq.ParquetFile(reviews_path)
-# metadata_file = pq.ParquetFile(metadata_path)
-
-
-DATA_DIR = Path("data/processed/sampled")
-reviews_path = DATA_DIR / "books_reviews_sample.parquet"
-metadata_path = DATA_DIR / "books_metadata_sample.parquet"
+from src.config import METADATA_SAMPLE_PATH, REVIEWS_SAMPLE_PATH, SAMPLED_DIR
 
 
 def aggregate_reviews(file_path):
@@ -153,17 +138,20 @@ def build_documents_string(file_path, review_df):
         documents.append(doc)
 
     # Save documents to pickle
-    with open(DATA_DIR / "documents.pickle", "wb") as f:
+    with open(SAMPLED_DIR / "documents.pickle", "wb") as f:
         pickle.dump(documents, f)
-    print(f"Saved {len(documents)} documents to {DATA_DIR / 'documents.pickle'}")
+    print(f"Saved {len(documents)} documents to {SAMPLED_DIR / 'documents.pickle'}")
 
     return documents
 
 
 def main():
-    reviews = aggregate_reviews(file_path=reviews_path)
+    """Aggregate reviews, build LangChain documents, and save them to pickle."""
+    reviews = aggregate_reviews(file_path=REVIEWS_SAMPLE_PATH)
 
-    documents = build_documents_string(file_path=metadata_path, review_df=reviews)
+    documents = build_documents_string(
+        file_path=METADATA_SAMPLE_PATH, review_df=reviews
+    )
     print(f"Processed {len(documents)} documents")
 
 

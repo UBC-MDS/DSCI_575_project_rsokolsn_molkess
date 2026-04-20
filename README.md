@@ -36,7 +36,7 @@ BM25 (Best Match 25) is a keyword-based algorithm which scores documents by how 
 
 Semantic search algorithms like FAISS use dense vector embeddings to find documents that are conceptually similar to a query, even when they share no keywords in common. Each document is converted into a high-dimensional vector using a pretrained language model, capturing its meaning rather than just its words. These vectors are stored in an index and are compared against a dense vector embedding of a given query. The algorithm uses euclidean distance to measure the similarity between vectors and returns the documents that are most similar to the query.
 
-## Usage
+## Set Up
 
 ### Set Up Environment Variables
 
@@ -80,7 +80,7 @@ streamlit run app/app.py
 We implemented two RAG pipelines. One using a semantic retriever and the other using a custom built hybrid retriever. To use the semantic pipeline:
 
 1. Follow the instructions above to set up the conda environment and set up your Groq API key.
-2. Enter your query on line 17 of the `rag_pipeline.py` script. Save the script.
+2. Enter your query on line 24 of the `rag_pipeline.py` script. Save the script.
 3. In your terminal navigate to the repository directory and run:
 
 ```{bash}
@@ -141,6 +141,82 @@ python src/semantic.py
 ```{bash}
 streamlit run app/app.py
 ```
+
+## Usage Examples
+
+### Web App
+
+Once the app is running, navigate to `http://localhost:8501` in your browser.
+
+**Search Tab — BM25 keyword search:**
+
+```text
+Query: "mystery novels set in Victorian England"
+Method: BM25 Keyword
+```
+
+**Search Tab — Semantic search:**
+
+```text
+Query: "books about grief and healing after loss"
+Method: FAISS Semantic
+```
+
+Both search methods return the top 5 results. Each result shows the title, author, average rating, retrieval score, and a short description of the book.
+
+**RAG Tab — LLM-powered recommendation:**
+
+```text
+Query: "What should I get for my 6th grade niece who loves dinosaurs?"
+```
+
+The RAG tab uses the hybrid retriever (BM25 + semantic) and returns an LLM-generated explanation alongside the source books.
+
+### Programmatic Usage
+
+You can call the retrieval functions directly from Python:
+
+```python
+from src.bm25 import bm25_search
+from src.semantic import semantic_search
+
+# BM25 keyword search — returns list of dicts
+results = bm25_search("mystery novels set in Victorian England", k=5)
+
+# Semantic search — returns list of dicts
+results = semantic_search("books about grief and healing", k=5)
+
+# Each result has the shape:
+# {"title": ..., "author": ..., "rating": ..., "blurb": ..., "score": ...}
+```
+
+## Description of New Features
+
+Below is a description of new features added in each version.
+
+### v0.1.0
+
+- load the books data from HuggingFace by running `load_data.py`
+- create a 10,000 book sample of the data by running `create_sample.py`
+- process the reviews and metadata into LangChain format by running `document_processing.py`
+- create the semantic search index by running `semantic.py`
+- create the BM25 retriever by running `bm25.py`
+- explore the dataset in `milestone1_exploration.ipynb` 
+- see a comparison of BM25 and Semantic search results on 5 example queries in `compare_results.ipynb` and `milestone1_discussion.md`
+- run the web app locally to perform any BM25 or Semantic searching that you want and see the top 5 results visually
+
+### v0.2.0
+
+- get LLM generated search results under the "RAG" tab in the web app
+- see the RAG pipeline in action in `rag_pipeline.py`
+- use hybrid (BM25 + Semantic) search results with the `hybrid_retriever()` function from `hybrid.py`
+- explore `milestone2_rag.ipynb` to see the LLMs response on 10 example queries
+- read `milestone2_discussion.md` to learn more about the model choice, prompt engineering decisions, and RAG evaluation on example queries
+
+### v0.3.0
+
+- access the web app publically at _____ (add link here)
+- see the comparison between llama-3.1-8b-instant LLM, which is implemented in the web app, with _____ (add name) LLM in _____ (add file here)
 
 ## Disclosure of Use of Generative AI Agents
 
