@@ -1,4 +1,10 @@
+"""
+Defines the system prompt and builds the LangChain prompt template used by the RAG pipeline.
+"""
+
 from langchain_core.prompts import ChatPromptTemplate
+
+# Investigated system prompts are commented out below for reference. See milestone2_discussion.md for details on the prompt engineering process and rationale for the final prompt choice.
 
 # SYSTEM_PROMPT = """
 #     You are a helpful Amazon assistant to shop for books.
@@ -20,6 +26,14 @@ SYSTEM_PROMPT = """
 
 
 def build_prompt():
+    """Build the LangChain prompt template for the RAG pipeline.
+
+    Returns
+    -------
+    ChatPromptTemplate
+        Template with {context} and {question} input variables, pre-filled with
+        the system prompt instructing the LLM to recommend books from context only.
+    """
     prompt = ChatPromptTemplate.from_template(
         SYSTEM_PROMPT
         + """

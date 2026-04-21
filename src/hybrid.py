@@ -1,9 +1,15 @@
+"""
+Combines BM25 keyword and FAISS semantic retrieval into a single hybrid retriever
+using Reciprocal Rank Fusion (RRF).
+"""
+
 from langchain_core.runnables import chain
 
 from src.bm25 import (  # noqa: F401
     custom_preprocess,
     load_retriever,
 )
+from src.config import BM25_INDEX_PATH
 
 from .rag_pipeline import retrieve_documents, semantic_retriever
 
@@ -27,7 +33,7 @@ def hybrid_retriever(query, k=5):
     return combined_results[:k]
 
 
-def bm25_retriever(query, path="data/processed/sampled/retriever.pickle", k=5):
+def bm25_retriever(query, path=BM25_INDEX_PATH, k=5):
     """Return the top-k documents for query using BM25 keyword matching.
 
     Args:

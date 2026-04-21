@@ -1,3 +1,8 @@
+"""
+Builds and runs the RAG pipeline: semantic retrieval via FAISS followed by
+answer generation using a Groq LLM.
+"""
+
 import os
 import sys
 
@@ -7,6 +12,7 @@ from langchain_core.runnables import RunnablePassthrough, chain
 from langchain_groq import ChatGroq
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from src.config import FAISS_INDEX_PATH
 from src.prompts import build_prompt
 from src.semantic import load_vectorstore
 
@@ -14,6 +20,7 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 
 def main():
+    """Run a sample query through the full RAG pipeline and print the result."""
     query = "What should I get for my 6th grade niece who loves dinosaurs?"
     retriever = semantic_retriever()
     rag_chain = build_rag_chain(retriever)
@@ -21,8 +28,8 @@ def main():
     print(answer)
 
 
-def semantic_retriever(path="data/processed/sampled/faiss_index/", k=5):
-    """Builds retriever using semantic vectorstore from semantic information retrieval
+def semantic_retriever(path=FAISS_INDEX_PATH, k=5):
+    """Builds retriever using semantic vectorstore from semantic information retrieval.
 
     Parameters
     ----------
@@ -44,13 +51,27 @@ def semantic_retriever(path="data/processed/sampled/faiss_index/", k=5):
 
 
 def retrieve_documents(retriever, query):
+    """Invoke the retriever and return the matching documents for a query.
+
+    Parameters
+    ----------
+    retriever : LangChain retriever
+        A retriever object with an .invoke() method.
+    query : str
+        The search string to retrieve documents for.
+
+    Returns
+    -------
+    list of LangChain Document
+        The documents returned by the retriever.
+    """
     docs = retriever.invoke(query)
     return docs
 
 
 @chain
 def build_context(docs):
-    """Formats relevant documents and information for the LLM to use as RAG context
+    """Formats relevant documents and information for the LLM to use as RAG context.
 
     Parameters
     ----------
@@ -75,12 +96,19 @@ def build_context(docs):
 
 
 def build_llm_pipeline():
+    """Instantiate and return the Groq LLM used for answer generation.
+
+    Returns
+    -------
+    ChatGroq
+        A ChatGroq instance using the llama-3.1-8b-instant model.
+    """
     llm = ChatGroq(model="llama-3.1-8b-instant")
     return llm
 
 
 def build_rag_chain(retriever):
-    """Builds the RAG pipeline object using the input retriever, prompt template, context building function, and llm
+    """Builds the RAG pipeline object using the input retriever, prompt template, context building function, and LLM.
 
     Parameters
     ----------

@@ -1,4 +1,4 @@
-# Don't commit raw or processed data files
+# Don't commit data files
 *.jsonl.gz
 *.parquet
 
