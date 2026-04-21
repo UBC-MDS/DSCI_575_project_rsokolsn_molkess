@@ -1,0 +1,13 @@
+streamlit==1.55.0
+pandas==2.3.3
+pyarrow<14.0.0
+nltk
+python-dotenv==1.2.2
+datasets<3.0.0
+sentence-transformers==5.4.0
+langchain==1.2.15
+langchain-huggingface
+langchain-community
+langchain-groq
+faiss-cpu
+rank_bm25
