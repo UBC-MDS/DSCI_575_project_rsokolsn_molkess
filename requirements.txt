@@ -1,3 +1,5 @@
+setuptools>=68
+wheel
 streamlit==1.55.0
 pandas==2.3.3
 pyarrow<14.0.0
@@ -11,4 +13,3 @@ langchain-community
 langchain-groq
 faiss-cpu
 rank_bm25
-pkg_resources
