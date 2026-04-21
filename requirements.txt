@@ -11,3 +11,4 @@ langchain-community
 langchain-groq
 faiss-cpu
 rank_bm25
+pkg_resources
