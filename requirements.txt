@@ -2,7 +2,7 @@ setuptools>=68
 wheel
 streamlit==1.55.0
 pandas==2.3.3
-pyarrow<14.0.0
+pyarrow
 nltk
 python-dotenv==1.2.2
 datasets<3.0.0
