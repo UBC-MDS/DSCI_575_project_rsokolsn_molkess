@@ -30,4 +30,13 @@ One thing to note is that Streamlit's free tier has limited memory and our app r
 - Summary of cleanups
 
 ## Step 4: Cloud Deployment Plan
-(See Step 4 above for required subsections)
+
+Though we did choose to deploy our web app suing Streamlit Cloud, a more robust and stable deployment would involve some substantial architecture changes. Since we have most recently worked in the AWS infrastructure, we will outline a deployment plan using those tools.
+
+We currently took a sample of the complete dataset and store the processed sample in a pickle file in GitHub alongside the BM25 retriever and Semantic index. To increase storage capacity, we would set up the initial data download pipeline to put the raw data directly into and S3 bucket. Since we already use a partitioned parquet file, this would be a fairly straightforward change. We would also store the processed data, BM25 retriever and Semantic index in the same bucket in a separate folder.
+
+To ensure all data stays up to date, we would use Lambda functions set to run on a nightly schedule. First, the function would download any new data saving it in the `raw` folder of the S3 bucket. Then, the function would do the data processing to store the products as LangChain documents and rebuild the indices. We would refactor as much of these computations as possible to use DuckDB so that it can work with a larger portion of the dataset. 
+
+We currently are hosting the web app using Streamlit Cloud free tier. While this is lightweight and works for now, we are already running into some memory issues as outlined above. For a cost effective way to scale the app, we could leverage the AWS App Runner, which autoscales to handle concurrent users. This would take some work as we would also need to set up a Docker container and image for the app. However, in the case of a fully deployed app, this extra effort would be worth it for the cost-savings and effiency. 
+
+We currently handle the LLM Inference via API using the Groq API and this could be easily moved into the AWS infrastructure outlined above. By using an API, DuckDB lazy loading and the AWS App Runner, it would be fairly straightforward to fully cloud deploy our project.
