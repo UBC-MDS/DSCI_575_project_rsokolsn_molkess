@@ -40,7 +40,7 @@ Semantic search algorithms like FAISS use dense vector embeddings to find docume
 
 ### Set Up Environment Variables
 
-For Milestone 2, you must add your Groq API key in order to use LLM search in the web app. To do so, follow the instructions below.
+For Milestone 2 and the final submission, you must add your Groq API key in order to use LLM search in the web app. To do so, follow the instructions below.
 
 #### Generate the key
 
@@ -60,7 +60,7 @@ Note: `.env` is added to `.gitignore` so it is never committed to GitHub with se
 2. If this is your first time exploring this project install the conda environment. In your terminal run:
 
 ```{bash}
-conda env create -f environment.yml
+conda env create -f conda_environment.yml
 ```
 
 3. Activate the environment
@@ -97,7 +97,7 @@ Note: You do not need to run the complete project in order to use the app. Compl
 2. If this is your first time exploring this project install the conda environment. In your terminal run:
 
 ```{bash}
-conda create -f environment.yml
+conda create -f conda_environment.yml
 ```
 
 3. Activate the environment
@@ -215,8 +215,10 @@ Below is a description of new features added in each version.
 
 ### v0.3.0
 
-- access the web app publically at _____ (add link here)
+- access the web app publically at <http://amazonbooks.streamlit.app>
 - see the comparison between llama-3.1-8b-instant LLM, which is implemented in the web app, with _____ (add name) LLM in _____ (add file here)
+
+Note: Streamlit's free tier has limited memory and our app requires loading the BM25 and Semantic indices into memory alongside the memory required for the actual computations. This means that after 5ish queries the deployed app runs out of memory. Streamlit displays a warning that the free tier memory has run out and offers some options. To reset the memory and continue using the app, select the option to 'Reboot'. There will be a warning that this impacts all users, which is ok. Then, refresh the webpage to see the app running as expected.
 
 ## Disclosure of Use of Generative AI Agents
 
