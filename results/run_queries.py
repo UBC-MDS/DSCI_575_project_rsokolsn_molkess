@@ -1,11 +1,13 @@
-"""Load queries CSV, run each query against BM25 and semantic search, and save results. This script performs Milestone 1: Qualitative Evaluation of Retrieval Methods part 4.2"""
+"""Load queries CSV, run first five queriesagainst BM25 and semantic search, and second five against the ___ LLM and the ___ LLM, and the save results."""
 
 import json
 import os
 import sys
 import warnings
-from dotenv import load_dotenv
 from pathlib import Path
+
+import pandas as pd
+from dotenv import load_dotenv
 
 warnings.filterwarnings("ignore")
 
@@ -15,21 +17,17 @@ os.chdir(root)
 sys.path.insert(0, "src")
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from src.prompts import build_prompt
-from src.semantic import load_vectorstore
 
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
-
-import pandas as pd
-
-from bm25 import (  
+from bm25 import (
     bm25_search,
     custom_preprocess,
     load_retriever,
 )
+from rag_pipeline import build_rag_chain
 from semantic import load_vectorstore, semantic_search
 from src.hybrid import hybrid_retriever
-from src.rag_pipeline import build_rag_chain
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 CSV_PATH = Path(__file__).resolve().parent / "queries.csv"
 
@@ -70,12 +68,15 @@ def main():
 
         bm_results = bm25_search(query, k=5, retriever=retriever)
         sem_results = semantic_search(query, k=5, vectorstore=vectorstore)
-        hyrbid_rag = build_rag_chain(hybr_retriever).invoke(query)
-
+        hybrid_rag = build_rag_chain(hybr_retriever).invoke(query)
+        gpt_oss_result = build_rag_chain(
+            hybr_retriever, model="openai/gpt-oss-20b"
+        ).invoke(query)
 
         df.at[i, "bm25"] = format_results(bm_results)
         df.at[i, "semantic_search"] = format_results(sem_results)
-        df.at[i, "hybrid rag"] = hyrbid_rag
+        df.at[i, "hybrid_rag_llama-3.1-8b-instant"] = hybrid_rag
+        df.at[i, "hybrid_rag_openai/gpt-oss-20b"] = gpt_oss_result
 
     df.to_csv(CSV_PATH, index=False)
     print(f"\nResults saved to {CSV_PATH}")

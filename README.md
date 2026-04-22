@@ -216,7 +216,7 @@ Below is a description of new features added in each version.
 ### v0.3.0
 
 - access the web app publically at <http://amazonbooks.streamlit.app>
-- see the comparison between llama-3.1-8b-instant LLM, which is implemented in the web app, with _____ (add name) LLM in _____ (add file here)
+- see the comparison between the results of the llama-3.1-8b-instant LLM and the openai/gpt-oss-20b LLM across 5 identical queries in the `compare_query_results.ipynb` or `final_discussion.md` notebooks
 
 Note: Streamlit's free tier has limited memory and our app requires loading the BM25 and Semantic indices into memory alongside the memory required for the actual computations. This means that after 5ish queries the deployed app runs out of memory. Streamlit displays a warning that the free tier memory has run out and offers some options. To reset the memory and continue using the app, select the option to 'Reboot'. There will be a warning that this impacts all users, which is ok. Then, refresh the webpage to see the app running as expected.
 

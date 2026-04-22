@@ -95,31 +95,38 @@ def build_context(docs):
     return context
 
 
-def build_llm_pipeline():
+def build_llm_pipeline(model="llama-3.1-8b-instant"):
     """Instantiate and return the Groq LLM used for answer generation.
+
+    Parameters
+    ----------
+    model : str, optional
+        The name of the Groq model to use, by default "llama-3.1-8b-instant".
 
     Returns
     -------
     ChatGroq
-        A ChatGroq instance using the llama-3.1-8b-instant model.
+        A ChatGroq instance using the specified model.
     """
-    llm = ChatGroq(model="llama-3.1-8b-instant")
+    llm = ChatGroq(model=model)
     return llm
 
 
-def build_rag_chain(retriever):
+def build_rag_chain(retriever, model="llama-3.1-8b-instant"):
     """Builds the RAG pipeline object using the input retriever, prompt template, context building function, and LLM.
 
     Parameters
     ----------
     retriever : LangChain retriever
         either the semantic or hybrid retriever
+    model : str, optional
+        Groq model name to use for generation, by default "llama-3.1-8b-instant".
 
     Returns
     -------
     RAG Chain
     """
-    llm = build_llm_pipeline()
+    llm = build_llm_pipeline(model=model)
     prompt = build_prompt()
     rag_chain = (
         {"context": retriever | build_context, "question": RunnablePassthrough()}
