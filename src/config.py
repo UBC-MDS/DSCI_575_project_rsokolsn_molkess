@@ -1,3 +1,6 @@
+"""
+Configuration file for the project, containing constants and paths used across the codebase."""
+
 from pathlib import Path
 
 DATA_DIR = Path(
